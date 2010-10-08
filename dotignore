@@ -110,12 +110,12 @@ build
 def create_ignore_file(vcs):
 	"""Writes either the git or the hg template to a file in the current directory"""
 	filename = ".%signore" % vcs
-	print filename
-	
 	template = vcs == "hg" and HG or GIT
 	
 	with open(filename, "w") as f:
 		f.write(template)
+		
+	print "    - \033[32;1mCreated\033[0m %s in %s" % (filename, os.getcwd())
 
 def main():
 	usage = "%prog [hg|git]"
