@@ -25,7 +25,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 """
 
-VERSION = "0.1.0"
+VERSION = "0.1.1"
 
 import sys, os
 import optparse
@@ -115,7 +115,7 @@ def create_ignore_file(vcs):
 	with open(filename, "w") as f:
 		f.write(template)
 		
-	print "    - \033[32;1mCreated\033[0m %s in %s" % (filename, os.getcwd())
+	print "  - \033[32;1mCreated\033[0m %s in %s" % (filename, os.getcwd())
 
 def main():
 	usage = "%prog [hg|git]"
@@ -129,7 +129,12 @@ def main():
 	if len(args) != 1:
 		parser.error("invalid number of arguments\nSee --help for more options")
 		
-	create_ignore_file(args[0])
+	if args[0] == "hg":
+		create_ignore_file("hg")
+	elif args[0] == "git":
+		create_ignore_file("git")
+	else:
+		parser.error("illegal argument\nSee --help for more options")
 
 if __name__ == "__main__":
 	sys.exit(main())
