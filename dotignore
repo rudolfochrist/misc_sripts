@@ -70,6 +70,46 @@ build
 
 """
 
+GIT_XCODE34 = """
+# .gitignore for XCode3/4
+# http://cocoaheads.tumblr.com/post/1350304132/gitignore-template-for-xcode3-4
+
+# Mac OS X Finder
+.DS_Store
+
+# Sparkle distribution Private Key (Don’t check me in!)
+dsa_priv.pem
+
+# XCode (and ancestors) per-user config (very noisy, and not relevant)
+*.mode1
+*.mode1v3
+*.mode2v3
+*.perspective
+*.perspectivev3
+*.pbxuser
+
+# Generated files
+VersionX-revision.h
+
+# build products
+build/
+*.[oa]
+
+# Other source repository archive directories (protects when importing)
+.hg
+.svn
+CVS
+
+# automatic backup files
+*~.nib
+*.swp
+*~
+*(Autosaved).rtfd/
+Backup[ ]of[ ]*.pages/
+Backup[ ]of[ ]*.key/
+Backup[ ]of[ ]*.numbers/
+"""
+
 HG = """
 syntax: glob
 
@@ -107,15 +147,13 @@ build
 
 """
 
-def create_ignore_file(vcs):
+def create_ignore_file(vcs, template):
 	"""Writes either the git or the hg template to a file in the current directory"""
 	filename = ".%signore" % vcs
-	template = vcs == "hg" and HG or GIT
-	
 	with open(filename, "w") as f:
 		f.write(template)
 		
-	print "  - \033[32;1mCreated\033[0m %s in %s" % (filename, os.getcwd())
+	print "- \033[32;1mCreated\033[0m %s in %s" % (filename, os.getcwd())
 
 def main():
 	usage = "%prog [hg|git]"
@@ -124,15 +162,22 @@ def main():
 	"""
 	parser = optparse.OptionParser(usage=usage, version=("%prog-" + VERSION),
 		description=description)
+	parser.add_option('--xcode', 
+	  help='generate .gitignore for XCode3/4 (http://cocoaheads.tumblr.com/post/1350304132/gitignore-template-for-xcode3-4)',
+	  action="store_true", dest='xcode')
+	  
 	
 	options, args = parser.parse_args()
 	if len(args) != 1:
 		parser.error("invalid number of arguments\nSee --help for more options")
 		
 	if args[0] == "hg":
-		create_ignore_file("hg")
+		create_ignore_file("hg", HG)
 	elif args[0] == "git":
-		create_ignore_file("git")
+	  if options.xcode:
+	    create_ignore_file("git", GIT_XCODE34)
+	  else:
+  		create_ignore_file("git", GIT)
 	else:
 		parser.error("illegal argument\nSee --help for more options")
 
